@@ -1,0 +1,29 @@
+#chartdiv {
+  height: 70vh;
+}
+
+.color-picker {
+  float: left;
+  display: inline;
+}
+
+.stat {
+  display: inline;
+}
+
+#tab-picker, #tabs .filter-row {
+  
+}
+
+#location-picker {
+  height: 30vh;
+  overflow: scroll;
+}
+
+.tab-picker button {
+  float: left;
+}
+
+.filter {
+  width: 100%;
+}
