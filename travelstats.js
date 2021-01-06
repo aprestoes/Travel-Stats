@@ -18,6 +18,7 @@ var provinces; // Format: {countryCode: ["CN-AB"], CN: ["CN-AB"], etc.}
 var countriesCount;
 var provincesCount;
 var citiesCount;
+var continentsCount;
 
 var countryElement;
 var provinceElement;
@@ -30,15 +31,14 @@ var notColor;
 var hoverColor;
 
 //Continent list from Interactive Visited Countries Map amcharts.com/visited_countries
-var continents = {
-		africa       : [ "AO","BF","BI","BJ","BW","CD","CF","CG","CI","CM","DJ","DZ","EG","ER","ET","GA","GH","GM","GN","GQ","GW","KE","LR","LS","LY","MA","MU","MG","ML","MR","MW","MZ","NA","NE","NG","RE","RW","SD","SL","SN","SO","SS","SZ","TD","TG","TN","TZ","UG","ZA","ZM","ZW","EH","KM","GO","JU","SH","ST","YT","BV","CV","SC" ],
-		asia         : [ "AE","AF","BD","BN","IO","BT","CN","ID","IL","IN","IQ","IR","JO","JP","KG","KH","KP","KR","KW","KZ","LA","LB","LK","MO","MM","MN","MY","NP","OM","PH","PK","PS","QA","SA","SY","TH","TJ","TL","TM","TW","UZ","VN","YE","HK","MV","BH","SG" ],
-		europe       : [ "AL","AM","AT","AZ","BA","BE","BG","BY","CH","CY","CZ","DE","DK","EE","ES","JE","FI","FR","GB","GE","GR","HR","HU","IE","IS","IT","LT","LU","LV","MD","ME","MK","NL","NO","PL","PT","RO","RS","SE","SI","SJ","SK","TR","UA","RU","VA","MT","MC","XK","LI","IM","GI","FO","AD","AX","GG","SM" ],
-		northAmerica : [ "BS","BZ","CA","CR","CU","DO","GL","GT","HN","HT","JM","MX","NI","PA","PR","SV","US","AG","AW","BB","BL","GD","KN","LC","MQ","TC","VG","AI","BM","DM","PM","GP","KY","MF","MS","SX","TT","VC","VI","BQ","CW" ],
-		southAmerica : [ "AR","BO","BR","CL","CO","EC","FK","GF","GY","PE","PY","SR","UY","VE","GS" ],
-		oceania      : [ "AS","AU","UM-FQ","CC","CX","FJ","FM","GU","HM","UM-HQ","UM-DQ","UM-JQ","KI","MH","UM-MQ","MP","NC","NF","NR","NU","NZ","PG","PW","SB","TF","TK","TL","TO","TV","VU","UM-WQ","WF","WS","CK","PF","PN" ]
-	};
-var selectedCountries = {};  //Used to check how many continents visited
+var continents = [
+    ["AO","BF","BI","BJ","BW","CD","CF","CG","CI","CM","DJ","DZ","EG","ER","ET","GA","GH","GM","GN","GQ","GW","KE","LR","LS","LY","MA","MU","MG","ML","MR","MW","MZ","NA","NE","NG","RE","RW","SD","SL","SN","SO","SS","SZ","TD","TG","TN","TZ","UG","ZA","ZM","ZW","EH","KM","GO","JU","SH","ST","YT","BV","CV","SC"],
+		["AE","AF","BD","BN","IO","BT","CN","ID","IL","IN","IQ","IR","JO","JP","KG","KH","KP","KR","KW","KZ","LA","LB","LK","MO","MM","MN","MY","NP","OM","PH","PK","PS","QA","SA","SY","TH","TJ","TL","TM","TW","UZ","VN","YE","HK","MV","BH","SG"],
+		["AL","AM","AT","AZ","BA","BE","BG","BY","CH","CY","CZ","DE","DK","EE","ES","JE","FI","FR","GB","GE","GR","HR","HU","IE","IS","IT","LT","LU","LV","MD","ME","MK","NL","NO","PL","PT","RO","RS","SE","SI","SJ","SK","TR","UA","RU","VA","MT","MC","XK","LI","IM","GI","FO","AD","AX","GG","SM"],
+		["BS","BZ","CA","CR","CU","DO","GL","GT","HN","HT","JM","MX","NI","PA","PR","SV","US","AG","AW","BB","BL","GD","KN","LC","MQ","TC","VG","AI","BM","DM","PM","GP","KY","MF","MS","SX","TT","VC","VI","BQ","CW"],
+		["AR","BO","BR","CL","CO","EC","FK","GF","GY","PE","PY","SR","UY","VE","GS"],
+		["AS","AU","UM-FQ","CC","CX","FJ","FM","GU","HM","UM-HQ","UM-DQ","UM-JQ","KI","MH","UM-MQ","MP","NC","NF","NR","NU","NZ","PG","PW","SB","TF","TK","TL","TO","TV","VU","UM-WQ","WF","WS","CK","PF","PN"]
+	];
 
 
 //===Functions===
@@ -100,8 +100,9 @@ function updateSelections(polygonSeries) {
     countriesCount = 0;
     provincesCount = 0;
     citiesCount = 0;
-
-    var tempSelectedCountries = []; //Unlike normal selectedCountries, is an array for chart purposes
+    continentsCount = 0;
+  
+    var tempSelectedCountries = [];
     var tempCountries = []; //Empty countries array
 
     //Countries Table
@@ -150,8 +151,9 @@ function updateSelections(polygonSeries) {
             polygonSeries.getPolygonById(countryCode).isActive = true;
         } else {
             polygonSeries.getPolygonById(countryCode).isActive = false;
-            /*$("." + countryCode + "-province-row").remove();
-            $("." + countryCode + "-label").remove();*/
+            $("." + countryCode + "-province-row").remove();
+            $("." + countryCode + "-label").remove();
+            delete provinces[countryCode];
         }
     });
 
@@ -165,6 +167,19 @@ function updateSelections(polygonSeries) {
             provinces[$(this).attr("countryCode")][this.id].isActive = false;
         }
     });
+    
+    //Count continents
+    for (let continent of continents) {
+        console.log(continent);
+        for (let country of tempSelectedCountries) {
+            console.log(country.id);
+            console.log(continent);
+            if (continent.includes(country.id)) {
+                continentsCount++;
+                break;
+            }
+        }
+    }
 
     chart.dataProvider.areas = tempSelectedCountries;
     countries = tempSelectedCountries;
@@ -218,6 +233,7 @@ function updateStats() {
 
     countryStat.text(countriesCount.toString());
     provinceStat.text(provincesCount.toString());
+    continentStat.text(continentsCount.toString());
 }
 
 function resetFilters() {
